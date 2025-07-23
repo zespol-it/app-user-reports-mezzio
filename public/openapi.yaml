@@ -1,0 +1,280 @@
+openapi: 3.0.3
+info:
+  title: User Reports API
+  description: API do zarządzania użytkownikami i wykształceniem, eksportu danych oraz raportowania.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/users:
+    get:
+      summary: Lista użytkowników
+      parameters:
+        - in: query
+          name: name
+          schema: { type: string }
+          description: Filtrowanie po imieniu i nazwisku
+        - in: query
+          name: phone_number
+          schema: { type: string }
+          description: Filtrowanie po numerze telefonu
+        - in: query
+          name: address
+          schema: { type: string }
+          description: Filtrowanie po adresie
+        - in: query
+          name: age
+          schema: { type: integer }
+          description: Filtrowanie po wieku
+        - in: query
+          name: education_id
+          schema: { type: integer }
+          description: Filtrowanie po wykształceniu
+        - in: query
+          name: sort_by
+          schema: { type: string, enum: [id, name, phoneNumber, address, age] }
+          description: Kolumna do sortowania
+        - in: query
+          name: sort_order
+          schema: { type: string, enum: [ASC, DESC] }
+          description: Kierunek sortowania
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+          description: Numer strony
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10 }
+          description: Liczba rekordów na stronę
+      responses:
+        '200':
+          description: Lista użytkowników
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+    post:
+      summary: Utwórz nowego użytkownika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: Użytkownik utworzony
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    put:
+      summary: Zaktualizuj użytkownika
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: Użytkownik zaktualizowany
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    delete:
+      summary: Usuń użytkownika
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Użytkownik usunięty
+  /api/users/{id}:
+    get:
+      summary: Pobierz użytkownika po ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Szczegóły użytkownika
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /api/education:
+    get:
+      summary: Lista wykształceń
+      responses:
+        '200':
+          description: Lista wykształceń
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Education'
+    post:
+      summary: Utwórz nowe wykształcenie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationInput'
+      responses:
+        '201':
+          description: Wykształcenie utworzone
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Education'
+    put:
+      summary: Zaktualizuj wykształcenie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationInput'
+      responses:
+        '200':
+          description: Wykształcenie zaktualizowane
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Education'
+    delete:
+      summary: Usuń wykształcenie
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '204':
+          description: Wykształcenie usunięte
+  /api/education/{id}:
+    get:
+      summary: Pobierz wykształcenie po ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Szczegóły wykształcenia
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Education'
+  /api/export:
+    get:
+      summary: Eksportuj dane użytkowników
+      parameters:
+        - in: query
+          name: format
+          required: true
+          schema: { type: string, enum: [xls, pdf] }
+        - in: query
+          name: name
+          schema: { type: string }
+        - in: query
+          name: phone_number
+          schema: { type: string }
+        - in: query
+          name: address
+          schema: { type: string }
+        - in: query
+          name: age
+          schema: { type: integer }
+        - in: query
+          name: education_id
+          schema: { type: integer }
+        - in: query
+          name: sort_by
+          schema: { type: string, enum: [id, name, phoneNumber, address, age] }
+        - in: query
+          name: sort_order
+          schema: { type: string, enum: [ASC, DESC] }
+      responses:
+        '200':
+          description: Plik eksportu (XLS lub PDF)
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        phone_number:
+          type: string
+        address:
+          type: string
+        age:
+          type: integer
+        education:
+          $ref: '#/components/schemas/Education'
+    UserInput:
+      type: object
+      required: [name, phone_number, address, age]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        phone_number:
+          type: string
+        address:
+          type: string
+        age:
+          type: integer
+        education_id:
+          type: integer
+    Education:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    EducationInput:
+      type: object
+      required: [name]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        pages:
+          type: integer
+        total:
+          type: integer
+        limit:
+          type: integer 

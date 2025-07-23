@@ -1,0 +1,66 @@
+# Composer
+/vendor/
+composer.phar
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Cache directories
+/.phpcs-cache
+/.psalm-cache
+/.phpunit.cache
+/data/cache/
+/data/doctrine/
+
+# Database files
+/data/database.sqlite
+/data/database.sqlite-journal
+
+# Test coverage
+/clover.xml
+/coveralls-upload.json
+/phpunit.xml
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Uploads (if any)
+/uploads/
+
+# Node modules (if using frontend build tools)
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build artifacts
+/dist/
+/build/
+
+# Backup files
+*.backup
+*.old

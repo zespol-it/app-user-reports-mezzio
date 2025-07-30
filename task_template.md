@@ -193,6 +193,18 @@ composer static-analysis
 # Standardy kodowania
 composer cs-check
 composer cs-fix
+
+# Testy bezpieczeństwa
+composer security-test
+
+# Testy penetracyjne
+php bin/security-test.php
+
+# Sprawdzenie zależności
+composer audit
+
+# Analiza kodu pod kątem bezpieczeństwa
+composer security-scan
 ```
 
 ### Serwer deweloperski
@@ -288,6 +300,29 @@ php bin/init-database.php
 ls -la data/
 ```
 
+### Problem: Błędy bezpieczeństwa
+```bash
+# Sprawdź logi błędów bezpieczeństwa
+tail -f logs/security.log
+
+# Uruchom testy bezpieczeństwa
+composer security-test
+
+# Sprawdź konfigurację CORS
+cat config/autoload/cors.global.php
+
+# Sprawdź nagłówki bezpieczeństwa
+curl -I http://localhost:8080/api/users
+
+# Test SQL Injection
+curl "http://localhost:8080/api/users?name='; DROP TABLE users; --"
+
+# Test XSS
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"<script>alert(\"XSS\")</script>"}'
+```
+
 ---
 
 ## 📊 Metryki jakości
@@ -309,6 +344,10 @@ ls -la data/
 - [ ] Parametryzowane zapytania SQL
 - [ ] Brak XSS vulnerabilities
 - [ ] Proper error handling
+- [ ] Testy bezpieczeństwa
+- [ ] Sprawdzenie uprawnień
+- [ ] Szyfrowanie wrażliwych danych
+- [ ] Rate limiting
 
 ---
 
@@ -340,6 +379,7 @@ ls -la data/
 - [ ] Testy jednostkowe
 - [ ] Testy integracyjne
 - [ ] Testy wydajnościowe
+- [ ] Testy bezpieczeństwa
 - [ ] Testy ręczne
 
 #### Dokumentacja

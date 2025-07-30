@@ -1,102 +1,55 @@
-# User Reports Mezzio Application
+# Aplikacja Raportów Użytkowników - Laminas Mezzio
 
-## 📋 Opis projektu
+Aplikacja do zarządzania użytkownikami z funkcjonalnością raportowania, sortowania, filtrowania i eksportu danych.
 
-Aplikacja do zarządzania użytkownikami z funkcjonalnością raportowania, sortowania, filtrowania i eksportu danych. Zbudowana na nowoczesnym stacku technologicznym z wykorzystaniem Laminas Mezzio 3.x i PHP 8.2+.
+## Funkcjonalności
 
-## 🚀 Jak powstał projekt
+- ✅ **CRUD dla użytkowników** - pełne operacje Create, Read, Update, Delete
+- ✅ **CRUD dla wykształcenia** - zarządzanie słownikiem wykształcenia
+- ✅ **Sortowanie** - po wszystkich kolumnach (rosnąco/malejąco)
+- ✅ **Filtrowanie** - po wszystkich polach użytkownika
+- ✅ **Paginacja** - stronicowanie wyników
+- ✅ **Eksport XLS** - eksport danych do formatu Excel
+- ✅ **Eksport PDF** - eksport danych do formatu PDF z polskimi znakami
+- ✅ **Dashboard** - interfejs webowy do zarządzania
+- ✅ **REST API** - pełne API dla wszystkich operacji
+- ✅ **Testy** - testy jednostkowe dla wszystkich handlerów
 
-### 1. Inicjalizacja projektu
-```bash
-# Utworzenie nowego projektu Mezzio
-composer create-project mezzio/mezzio-skeleton app-user-reports-mezzio
+## Wymagania systemowe
 
-# Przejście do katalogu projektu
-cd app-user-reports-mezzio
+- PHP 8.1 lub nowszy
+- Composer
+- SQLite (wbudowany w PHP)
 
-# Włączenie trybu deweloperskiego
-composer development-enable
-```
+## Instalacja
 
-### 2. Instalacja zależności
-```bash
-# Instalacja Doctrine ORM
-composer require doctrine/orm
+1. **Klonowanie projektu**
+   ```bash
+   git clone <repository-url>
+   cd app-user-reports-mezzio
+   ```
 
-# Instalacja bibliotek do eksportu
-composer require phpoffice/phpspreadsheet
-composer require dompdf/dompdf
+2. **Instalacja zależności**
+   ```bash
+   composer install
+   ```
 
-# Instalacja walidacji
-composer require laminas/laminas-inputfilter
+3. **Inicjalizacja bazy danych**
+   ```bash
+   php bin/init-database.php
+   ```
 
-# Instalacja narzędzi deweloperskich
-composer require --dev phpunit/phpunit
-composer require --dev vimeo/psalm
-composer require --dev laminas/laminas-coding-standard
-```
+4. **Uruchomienie serwera deweloperskiego**
+   ```bash
+   composer serve
+   ```
 
-### 3. Konfiguracja Doctrine
-```bash
-# Utworzenie pliku konfiguracyjnego Doctrine
-# config/autoload/doctrine.global.php
-```
+5. **Otwarcie aplikacji**
+   - Dashboard: http://localhost:8080/dashboard.html
+   - API: http://localhost:8080/api/users
 
-### 4. Tworzenie encji
-```bash
-# Utworzenie encji User
-# src/Entity/User.php
+## Struktura projektu
 
-# Utworzenie encji Education  
-# src/Entity/Education.php
-```
-
-### 5. Implementacja handlerów
-```bash
-# Utworzenie UserHandler
-# src/Handler/UserHandler.php
-
-# Utworzenie EducationHandler
-# src/Handler/EducationHandler.php
-
-# Utworzenie ExportHandler
-# src/Handler/ExportHandler.php
-```
-
-### 6. Konfiguracja routingu
-```bash
-# Dodanie tras w config/routes.php
-```
-
-### 7. Tworzenie frontendu
-```bash
-# Utworzenie dashboard.html
-# public/dashboard.html
-
-# Utworzenie strony głównej
-# templates/app/home-page.phtml
-```
-
-### 8. Implementacja testów
-```bash
-# Utworzenie testów dla handlerów
-# test/Handler/UserHandlerTest.php
-# test/Handler/EducationHandlerTest.php
-# test/Handler/ExportHandlerTest.php
-```
-
-### 9. Inicjalizacja bazy danych
-```bash
-# Utworzenie skryptu inicjalizacji
-# bin/init-database.php
-
-# Uruchomienie inicjalizacji
-php bin/init-database.php
-```
-
-## 🏗️ Architektura aplikacji
-
-### Struktura katalogów
 ```
 app-user-reports-mezzio/
 ├── src/
@@ -106,8 +59,7 @@ app-user-reports-mezzio/
 │   ├── Handler/          # Handlery API
 │   │   ├── UserHandler.php
 │   │   ├── EducationHandler.php
-│   │   ├── ExportHandler.php
-│   │   └── UserInputFilter.php
+│   │   └── ExportHandler.php
 │   ├── Factory/          # Factory dla dependency injection
 │   │   ├── EntityManagerFactory.php
 │   │   └── HandlerFactory.php
@@ -119,317 +71,127 @@ app-user-reports-mezzio/
 │   │   └── dependencies.global.php
 │   └── routes.php
 ├── public/               # Pliki publiczne
-│   ├── dashboard.html    # Dashboard aplikacji
-│   └── swagger.html      # Dokumentacja API
-├── templates/            # Szablony
-│   └── app/
-│       └── home-page.phtml
+│   └── dashboard.html    # Dashboard aplikacji
 ├── test/                 # Testy
 │   └── Handler/
+│       ├── UserHandlerTest.php
+│       └── EducationHandlerTest.php
 ├── bin/                  # Skrypty
 │   └── init-database.php
 └── data/                 # Dane aplikacji
     └── database.sqlite   # Baza danych SQLite
 ```
 
-### Wzorce projektowe
-- **PSR-15 Middleware** - architektura middleware
-- **Dependency Injection** - wstrzykiwanie zależności
-- **Repository Pattern** - dostęp do danych przez Doctrine
-- **Factory Pattern** - tworzenie obiektów
-- **Input Filter Pattern** - walidacja danych
-
-## 🔧 Jak uruchomić projekt
-
-### Wymagania systemowe
-- PHP 8.1+
-- Composer
-- SQLite (wbudowany w PHP)
-
-### Instalacja
-```bash
-# 1. Klonowanie projektu
-git clone <repository-url>
-cd app-user-reports-mezzio
-
-# 2. Instalacja zależności
-composer install
-
-# 3. Inicjalizacja bazy danych
-php bin/init-database.php
-
-# 4. Uruchomienie serwera deweloperskiego
-composer serve
-```
-
-### Dostęp do aplikacji
-- **Strona główna**: http://localhost:8080
-- **Dashboard**: http://localhost:8080/dashboard.html
-- **Dokumentacja API**: http://localhost:8080/swagger.html
-- **API Użytkownicy**: http://localhost:8080/api/users
-- **API Wykształcenie**: http://localhost:8080/api/education
-
-## 📚 API Endpoints
+## API Endpoints
 
 ### Użytkownicy
-```
-GET    /api/users                    # Lista z paginacją
-GET    /api/users?id={id}           # Pojedynczy użytkownik
-POST   /api/users                   # Utwórz użytkownika
-PUT    /api/users                   # Zaktualizuj użytkownika
-DELETE /api/users?id={id}           # Usuń użytkownika
-```
+
+- `GET /api/users` - Lista użytkowników z paginacją
+- `GET /api/users?id={id}` - Pobierz użytkownika po ID
+- `POST /api/users` - Utwórz nowego użytkownika
+- `PUT /api/users` - Zaktualizuj użytkownika
+- `DELETE /api/users?id={id}` - Usuń użytkownika
 
 ### Wykształcenie
-```
-GET    /api/education               # Lista wykształceń
-GET    /api/education?id={id}       # Pojedyncze wykształcenie
-POST   /api/education               # Utwórz wykształcenie
-PUT    /api/education               # Zaktualizuj wykształcenie
-DELETE /api/education?id={id}       # Usuń wykształcenie
-```
+
+- `GET /api/education` - Lista wszystkich wykształceń
+- `GET /api/education?id={id}` - Pobierz wykształcenie po ID
+- `POST /api/education` - Utwórz nowe wykształcenie
+- `PUT /api/education` - Zaktualizuj wykształcenie
+- `DELETE /api/education?id={id}` - Usuń wykształcenie
 
 ### Eksport
-```
-GET    /api/export?format=xls       # Eksport do Excel
-GET    /api/export?format=pdf       # Eksport do PDF
-```
 
-## 🛠️ Jak tworzyć nowe moduły i funkcjonalności
+- `GET /api/export?format=xls` - Eksport do Excel
+- `GET /api/export?format=pdf` - Eksport do PDF
 
-### 1. Tworzenie nowej encji
+## Parametry zapytań
 
+### Filtrowanie
+- `name` - filtruj po imieniu i nazwisku
+- `phone_number` - filtruj po numerze telefonu
+- `address` - filtruj po adresie
+- `age` - filtruj po wieku
+- `education_id` - filtruj po wykształceniu
+
+### Sortowanie
+- `sort_by` - kolumna do sortowania (id, name, phoneNumber, address, age)
+- `sort_order` - kierunek sortowania (ASC, DESC)
+
+### Paginacja
+- `page` - numer strony (domyślnie 1)
+- `limit` - liczba rekordów na stronę (domyślnie 10, max 100)
+
+## Przykłady użycia API
+
+### Pobieranie użytkowników z filtrowaniem i sortowaniem
 ```bash
-# Utworzenie encji Product
-# src/Entity/Product.php
+curl "http://localhost:8080/api/users?name=Jan&sort_by=age&sort_order=DESC&page=1&limit=5"
 ```
 
-```php
-<?php
-declare(strict_types=1);
-
-namespace App\Entity;
-
-use Doctrine\ORM\Mapping as ORM;
-
-#[ORM\Entity]
-#[ORM\Table(name: 'product')]
-class Product
-{
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
-
-    #[ORM\Column(type: 'string', length: 255)]
-    private string $name;
-
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    private float $price;
-
-    // Gettery i settery...
-}
-```
-
-### 2. Tworzenie handlera
-
+### Tworzenie nowego użytkownika
 ```bash
-# Utworzenie ProductHandler
-# src/Handler/ProductHandler.php
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Jan Kowalski",
+    "phone_number": "+48 123 456 789",
+    "address": "ul. Testowa 1, Warszawa",
+    "age": 30,
+    "education_id": 3
+  }'
 ```
 
-```php
-<?php
-declare(strict_types=1);
-
-namespace App\Handler;
-
-use App\Entity\Product;
-use Doctrine\ORM\EntityManager;
-use Laminas\Diactoros\Response\JsonResponse;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-
-class ProductHandler implements RequestHandlerInterface
-{
-    public function __construct(
-        private EntityManager $entityManager
-    ) {}
-
-    public function handle(ServerRequestInterface $request): ResponseInterface
-    {
-        $method = $request->getMethod();
-        
-        return match ($method) {
-            'GET' => $this->handleGet($request),
-            'POST' => $this->handlePost($request),
-            'PUT' => $this->handlePut($request),
-            'DELETE' => $this->handleDelete($request),
-            default => new JsonResponse(['error' => 'Method not allowed'], 405),
-        };
-    }
-
-    // Implementacja metod CRUD...
-}
-```
-
-### 3. Tworzenie InputFilter dla walidacji
-
+### Eksport danych do Excel
 ```bash
-# Utworzenie ProductInputFilter
-# src/Handler/ProductInputFilter.php
+curl "http://localhost:8080/api/export?format=xls&name=Jan" -o raport.xlsx
 ```
 
-```php
-<?php
-declare(strict_types=1);
+## Testy
 
-namespace App\Handler;
-
-use Laminas\InputFilter\InputFilter;
-use Laminas\InputFilter\Input;
-use Laminas\Validator;
-use Laminas\Filter;
-
-class ProductInputFilter extends InputFilter
-{
-    public function __construct()
-    {
-        // name
-        $name = new Input('name');
-        $name->getFilterChain()->attach(new Filter\StringTrim());
-        $name->getValidatorChain()
-            ->attach(new Validator\NotEmpty())
-            ->attach(new Validator\StringLength(['max' => 255]));
-        $this->add($name);
-
-        // price
-        $price = new Input('price');
-        $price->getValidatorChain()
-            ->attach(new Validator\NotEmpty())
-            ->attach(new Validator\GreaterThan(['min' => 0]));
-        $this->add($price);
-    }
-}
-```
-
-### 4. Dodanie routingu
-
-```php
-// config/routes.php
-$app->route('/api/products', ProductHandler::class, ['GET', 'POST', 'PUT', 'DELETE'], 'api.products');
-$app->route('/api/products/{id:\d+}', ProductHandler::class, ['GET'], 'api.products.id');
-```
-
-### 5. Konfiguracja dependency injection
-
-```php
-// config/autoload/dependencies.global.php
-'factories' => [
-    App\Handler\ProductHandler::class => App\Factory\HandlerFactory::class,
-],
-```
-
-### 6. Tworzenie testów
-
+Uruchomienie testów:
 ```bash
-# Utworzenie ProductHandlerTest
-# test/Handler/ProductHandlerTest.php
-```
-
-```php
-<?php
-declare(strict_types=1);
-
-namespace AppTest\Handler;
-
-use App\Handler\ProductHandler;
-use App\Entity\Product;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\QueryBuilder;
-use Laminas\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
-
-class ProductHandlerTest extends TestCase
-{
-    // Implementacja testów...
-}
-```
-
-### 7. Aktualizacja bazy danych
-
-```bash
-# Dodanie tabeli do bazy danych
-# Można użyć Doctrine Migrations lub ręcznie dodać do init-database.php
-```
-
-## 🧪 Testowanie
-
-### Uruchomienie testów
-```bash
-# Wszystkie testy
 composer test
-
-# Testy z pokryciem
-composer test-coverage
-
-# Statyczna analiza kodu
-composer static-analysis
 ```
 
-### Struktura testów
-- **UserHandlerTest** - testy CRUD dla użytkowników
-- **EducationHandlerTest** - testy CRUD dla wykształcenia
-- **ExportHandlerTest** - testy eksportu
+Testy pokrywają:
+- ✅ Operacje CRUD dla użytkowników
+- ✅ Operacje CRUD dla wykształcenia
+- ✅ Obsługę błędów (404, 400, 405)
+- ✅ Paginację i filtrowanie
+- ✅ Walidację danych wejściowych
 
-## 🔍 Narzędzia deweloperskie
+## Konfiguracja
 
-### Analiza kodu
+### Baza danych
+Aplikacja używa SQLite jako bazy danych. Plik bazy danych znajduje się w `data/database.sqlite`.
+
+### Środowisko deweloperskie
 ```bash
-# PHPStan/Psalm
-composer static-analysis
-
-# Coding standards
-composer cs-check
-composer cs-fix
+composer development-enable
 ```
-
-### Cache
-```bash
-# Czyszczenie cache
-composer clear-config-cache
-```
-
-### Serwer deweloperski
-```bash
-# Uruchomienie serwera
-composer serve
-
-# Sprawdzenie statusu trybu deweloperskiego
-composer development-status
-```
-
-## 📦 Deployment
 
 ### Środowisko produkcyjne
 ```bash
-# Wyłączenie trybu deweloperskiego
 composer development-disable
-
-# Instalacja zależności produkcyjnych
-composer install --no-dev --optimize-autoloader
-
-# Ustawienie uprawnień
-chmod -R 755 data/
 ```
 
-### Konfiguracja serwera
-- Skonfiguruj serwer web (Apache/Nginx) na katalog `public/`
-- Ustaw zmienne środowiskowe
-- Skonfiguruj bazę danych
+## Rozwój aplikacji
 
-## 🐛 Troubleshooting
+### Dodawanie nowych encji
+1. Utwórz encję w `src/Entity/`
+2. Dodaj handler w `src/Handler/`
+3. Dodaj routing w `config/routes.php`
+4. Napisz testy w `test/Handler/`
+
+### Dodawanie nowych funkcjonalności
+1. Utwórz handler lub middleware
+2. Dodaj factory w `src/Factory/`
+3. Skonfiguruj dependency injection
+4. Dodaj routing
+5. Napisz testy
+
+## Troubleshooting
 
 ### Problem z bazą danych
 ```bash
@@ -452,33 +214,10 @@ composer clear-config-cache
 chmod -R 755 data/
 ```
 
-## 📈 Rozwój aplikacji
-
-### Dodawanie nowych funkcjonalności
-1. **Utwórz encję** w `src/Entity/`
-2. **Dodaj handler** w `src/Handler/`
-3. **Stwórz InputFilter** dla walidacji
-4. **Dodaj routing** w `config/routes.php`
-5. **Napisz testy** w `test/Handler/`
-6. **Zaktualizuj dokumentację**
-
-### Best practices
-- Używaj strict types
-- Implementuj walidację danych
-- Pisz testy dla nowych funkcjonalności
-- Dokumentuj API
-- Używaj dependency injection
-- Przestrzegaj PSR-12
-
-## 📄 Licencja
+## Licencja
 
 BSD-3-Clause
 
-## 👥 Autor
+## Autor
 
-Aplikacja została stworzona zgodnie z wymaganiami projektu raportów użytkowników.
-
----
-
-**Wersja**: 1.0.0  
-**Ostatnia aktualizacja**: 2024
+(zespół-IT.pl) Grzegorz Skotniczny

@@ -476,9 +476,4 @@ BSD-3-Clause
 
 ## 👥 Autor
 
-Aplikacja została stworzona zgodnie z wymaganiami projektu raportów użytkowników.
-
----
-
-**Wersja**: 1.0.0  
-**Ostatnia aktualizacja**: 2024
+Grzegorz Skotniczny

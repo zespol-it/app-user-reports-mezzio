@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace AppTest\Handler;
 
-use App\Entity\User;
 use App\Entity\Education;
+use App\Entity\User;
 use App\Handler\UserHandler;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\QueryBuilder;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+
+use function json_decode;
 
 class UserHandlerTest extends TestCase
 {
@@ -27,10 +29,10 @@ class UserHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManager::class);
-        $this->queryBuilder = $this->createMock(QueryBuilder::class);
-        $this->query = $this->createMock(Query::class);
-        $this->repository = $this->createMock(EntityRepository::class);
-        
+        $this->queryBuilder  = $this->createMock(QueryBuilder::class);
+        $this->query         = $this->createMock(Query::class);
+        $this->repository    = $this->createMock(EntityRepository::class);
+
         $this->handler = new UserHandler($this->entityManager);
     }
 
@@ -48,10 +50,10 @@ class UserHandlerTest extends TestCase
         $request = new ServerRequest();
         $request = $request->withMethod('POST')
                           ->withParsedBody([
-                              'name' => 'Jan Kowalski',
+                              'name'         => 'Jan Kowalski',
                               'phone_number' => '+48 123 456 789',
-                              'address' => 'ul. Testowa 1',
-                              'age' => 30
+                              'address'      => 'ul. Testowa 1',
+                              'age'          => 30,
                           ]);
 
         $response = $this->handler->handle($request);
@@ -95,11 +97,11 @@ class UserHandlerTest extends TestCase
         $request = new ServerRequest();
         $request = $request->withMethod('POST')
                           ->withParsedBody([
-                              'name' => 'Jan Kowalski',
+                              'name'         => 'Jan Kowalski',
                               'phone_number' => '+48 123 456 789',
-                              'address' => 'ul. Testowa 1',
-                              'age' => 30,
-                              'education_id' => 1
+                              'address'      => 'ul. Testowa 1',
+                              'age'          => 30,
+                              'education_id' => 1,
                           ]);
 
         $response = $this->handler->handle($request);
@@ -117,12 +119,12 @@ class UserHandlerTest extends TestCase
     {
         $users = [
             (new User())->setName('Jan Kowalski')->setPhoneNumber('123')->setAddress('Test')->setAge(30),
-            (new User())->setName('Anna Nowak')->setPhoneNumber('456')->setAddress('Test2')->setAge(25)
+            (new User())->setName('Anna Nowak')->setPhoneNumber('456')->setAddress('Test2')->setAge(25),
         ];
 
         // Mock count query
         $countQueryBuilder = $this->createMock(QueryBuilder::class);
-        $countQuery = $this->createMock(Query::class);
+        $countQuery        = $this->createMock(Query::class);
 
         $this->entityManager
             ->expects($this->exactly(2))
@@ -312,9 +314,9 @@ class UserHandlerTest extends TestCase
         $request = new ServerRequest();
         $request = $request->withMethod('PUT')
                           ->withParsedBody([
-                              'id' => 1,
+                              'id'   => 1,
                               'name' => 'Jan Nowy',
-                              'age' => 35
+                              'age'  => 35,
                           ]);
 
         $response = $this->handler->handle($request);
@@ -356,7 +358,7 @@ class UserHandlerTest extends TestCase
                           ->withAttribute('id', 1)
                           ->withParsedBody([
                               'name' => 'Jan Nowy',
-                              'age' => 35
+                              'age'  => 35,
                           ]);
 
         $response = $this->handler->handle($request);
@@ -570,4 +572,4 @@ class UserHandlerTest extends TestCase
         $data = json_decode($response->getBody()->getContents(), true);
         $this->assertEquals('ID is required', $data['error']);
     }
-} 
+}

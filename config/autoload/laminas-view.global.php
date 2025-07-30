@@ -10,7 +10,7 @@ return [
             __DIR__ . '/../../templates/layout',
         ],
     ],
-    'templates' => [
+    'templates'    => [
         'paths' => [
             'app'    => [__DIR__ . '/../../templates/app'],
             'error'  => [__DIR__ . '/../../templates/error'],
@@ -26,4 +26,4 @@ return [
             ],
         ],
     ],
-]; 
+];

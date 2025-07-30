@@ -33,4 +33,4 @@ class Education
         $this->name = $name;
         return $this;
     }
-} 
+}

@@ -4,25 +4,32 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
-use App\Entity\User;
 use App\Entity\Education;
+use App\Entity\User;
+use App\Handler\UserInputFilter;
 use Doctrine\ORM\EntityManager;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use App\Handler\UserInputFilter;
+
+use function array_keys;
+use function ceil;
+use function in_array;
+use function max;
+use function min;
 
 class UserHandler implements RequestHandlerInterface
 {
     public function __construct(
         private EntityManager $entityManager
-    ) {}
+    ) {
+    }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $method = $request->getMethod();
-        
+
         return match ($method) {
             'GET' => $this->handleGet($request),
             'POST' => $this->handlePost($request),
@@ -34,9 +41,9 @@ class UserHandler implements RequestHandlerInterface
 
     private function handleGet(ServerRequestInterface $request): ResponseInterface
     {
-        $attributes = $request->getAttribute('id');
+        $attributes  = $request->getAttribute('id');
         $queryParams = $request->getQueryParams();
-        $id = $attributes ?? ($queryParams['id'] ?? null);
+        $id          = $attributes ?? ($queryParams['id'] ?? null);
 
         if ($id) {
             return $this->getUser((int) $id);
@@ -48,16 +55,16 @@ class UserHandler implements RequestHandlerInterface
     private function handlePost(ServerRequestInterface $request): ResponseInterface
     {
         $data = $request->getParsedBody();
-        
-        if (!$data) {
+
+        if (! $data) {
             return new JsonResponse(['error' => 'Invalid data'], 400);
         }
 
         $inputFilter = new UserInputFilter();
         $inputFilter->setData($data);
-        if (!$inputFilter->isValid()) {
+        if (! $inputFilter->isValid()) {
             return new JsonResponse([
-                'error' => 'Validation failed',
+                'error'    => 'Validation failed',
                 'messages' => $inputFilter->getMessages(),
             ], 400);
         }
@@ -69,7 +76,7 @@ class UserHandler implements RequestHandlerInterface
         $user->setAddress($validData['address']);
         $user->setAge((int) $validData['age']);
 
-        if (!empty($validData['education_id'])) {
+        if (! empty($validData['education_id'])) {
             $education = $this->entityManager->getRepository(Education::class)->find($validData['education_id']);
             $user->setEducation($education);
         }
@@ -78,13 +85,13 @@ class UserHandler implements RequestHandlerInterface
         $this->entityManager->flush();
 
         return new JsonResponse([
-            'id' => $user->getId(),
-            'name' => $user->getName(),
+            'id'           => $user->getId(),
+            'name'         => $user->getName(),
             'phone_number' => $user->getPhoneNumber(),
-            'address' => $user->getAddress(),
-            'age' => $user->getAge(),
-            'education' => $user->getEducation() ? [
-                'id' => $user->getEducation()->getId(),
+            'address'      => $user->getAddress(),
+            'age'          => $user->getAge(),
+            'education'    => $user->getEducation() ? [
+                'id'   => $user->getEducation()->getId(),
                 'name' => $user->getEducation()->getName(),
             ] : null,
         ], 201);
@@ -92,16 +99,16 @@ class UserHandler implements RequestHandlerInterface
 
     private function handlePut(ServerRequestInterface $request): ResponseInterface
     {
-        $data = $request->getParsedBody();
+        $data       = $request->getParsedBody();
         $attributes = $request->getAttribute('id');
-        $id = $attributes ?? ($data['id'] ?? null);
+        $id         = $attributes ?? ($data['id'] ?? null);
 
-        if (!$id) {
+        if (! $id) {
             return new JsonResponse(['error' => 'ID is required'], 400);
         }
 
         $user = $this->entityManager->getRepository(User::class)->find($id);
-        if (!$user) {
+        if (! $user) {
             return new JsonResponse(['error' => 'User not found'], 404);
         }
 
@@ -109,9 +116,9 @@ class UserHandler implements RequestHandlerInterface
         $inputFilter->setData($data);
         // W PUT wszystkie pola są opcjonalne, ale jeśli podane, muszą być poprawne
         $inputFilter->setValidationGroup(array_keys($data));
-        if (!$inputFilter->isValid()) {
+        if (! $inputFilter->isValid()) {
             return new JsonResponse([
-                'error' => 'Validation failed',
+                'error'    => 'Validation failed',
                 'messages' => $inputFilter->getMessages(),
             ], 400);
         }
@@ -137,13 +144,13 @@ class UserHandler implements RequestHandlerInterface
         $this->entityManager->flush();
 
         return new JsonResponse([
-            'id' => $user->getId(),
-            'name' => $user->getName(),
+            'id'           => $user->getId(),
+            'name'         => $user->getName(),
             'phone_number' => $user->getPhoneNumber(),
-            'address' => $user->getAddress(),
-            'age' => $user->getAge(),
-            'education' => $user->getEducation() ? [
-                'id' => $user->getEducation()->getId(),
+            'address'      => $user->getAddress(),
+            'age'          => $user->getAge(),
+            'education'    => $user->getEducation() ? [
+                'id'   => $user->getEducation()->getId(),
                 'name' => $user->getEducation()->getName(),
             ] : null,
         ]);
@@ -151,16 +158,16 @@ class UserHandler implements RequestHandlerInterface
 
     private function handleDelete(ServerRequestInterface $request): ResponseInterface
     {
-        $attributes = $request->getAttribute('id');
+        $attributes  = $request->getAttribute('id');
         $queryParams = $request->getQueryParams();
-        $id = $attributes ?? ($queryParams['id'] ?? null);
+        $id          = $attributes ?? ($queryParams['id'] ?? null);
 
-        if (!$id) {
+        if (! $id) {
             return new JsonResponse(['error' => 'ID is required'], 400);
         }
 
         $user = $this->entityManager->getRepository(User::class)->find($id);
-        if (!$user) {
+        if (! $user) {
             return new JsonResponse(['error' => 'User not found'], 404);
         }
 
@@ -173,19 +180,19 @@ class UserHandler implements RequestHandlerInterface
     private function getUser(int $id): ResponseInterface
     {
         $user = $this->entityManager->getRepository(User::class)->find($id);
-        
-        if (!$user) {
+
+        if (! $user) {
             return new JsonResponse(['error' => 'User not found'], 404);
         }
 
         return new JsonResponse([
-            'id' => $user->getId(),
-            'name' => $user->getName(),
+            'id'           => $user->getId(),
+            'name'         => $user->getName(),
             'phone_number' => $user->getPhoneNumber(),
-            'address' => $user->getAddress(),
-            'age' => $user->getAge(),
-            'education' => $user->getEducation() ? [
-                'id' => $user->getEducation()->getId(),
+            'address'      => $user->getAddress(),
+            'age'          => $user->getAge(),
+            'education'    => $user->getEducation() ? [
+                'id'   => $user->getEducation()->getId(),
                 'name' => $user->getEducation()->getName(),
             ] : null,
         ]);
@@ -225,17 +232,17 @@ class UserHandler implements RequestHandlerInterface
         }
 
         // Sortowanie
-        $sortBy = $queryParams['sort_by'] ?? 'id';
+        $sortBy    = $queryParams['sort_by'] ?? 'id';
         $sortOrder = $queryParams['sort_order'] ?? 'ASC';
-        
+
         $allowedSortFields = ['id', 'name', 'phoneNumber', 'address', 'age'];
         if (in_array($sortBy, $allowedSortFields)) {
             $qb->orderBy('u.' . $sortBy, $sortOrder);
         }
 
         // Paginacja
-        $page = max(1, (int) ($queryParams['page'] ?? 1));
-        $limit = max(1, min(100, (int) ($queryParams['limit'] ?? 10)));
+        $page   = max(1, (int) ($queryParams['page'] ?? 1));
+        $limit  = max(1, min(100, (int) ($queryParams['limit'] ?? 10)));
         $offset = ($page - 1) * $limit;
 
         $qb->setFirstResult($offset)
@@ -280,26 +287,26 @@ class UserHandler implements RequestHandlerInterface
         $result = [];
         foreach ($users as $user) {
             $result[] = [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
+                'id'           => $user->getId(),
+                'name'         => $user->getName(),
                 'phone_number' => $user->getPhoneNumber(),
-                'address' => $user->getAddress(),
-                'age' => $user->getAge(),
-                'education' => $user->getEducation() ? [
-                    'id' => $user->getEducation()->getId(),
+                'address'      => $user->getAddress(),
+                'age'          => $user->getAge(),
+                'education'    => $user->getEducation() ? [
+                    'id'   => $user->getEducation()->getId(),
                     'name' => $user->getEducation()->getName(),
                 ] : null,
             ];
         }
 
         return new JsonResponse([
-            'data' => $result,
+            'data'       => $result,
             'pagination' => [
-                'page' => $page,
+                'page'  => $page,
                 'limit' => $limit,
                 'total' => (int) $totalCount,
                 'pages' => (int) ceil($totalCount / $limit),
             ],
         ]);
     }
-} 
+}

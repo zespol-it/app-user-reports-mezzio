@@ -10,8 +10,10 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+
+use function json_decode;
 
 class EducationHandlerTest extends TestCase
 {
@@ -22,8 +24,8 @@ class EducationHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManager::class);
-        $this->repository = $this->createMock(EntityRepository::class);
-        
+        $this->repository    = $this->createMock(EntityRepository::class);
+
         $this->handler = new EducationHandler($this->entityManager);
     }
 
@@ -71,7 +73,7 @@ class EducationHandlerTest extends TestCase
         $educations = [
             (new Education())->setName('Podstawowe'),
             (new Education())->setName('Średnie'),
-            (new Education())->setName('Wyższe')
+            (new Education())->setName('Wyższe'),
         ];
 
         $this->entityManager
@@ -184,8 +186,8 @@ class EducationHandlerTest extends TestCase
         $request = new ServerRequest();
         $request = $request->withMethod('PUT')
                           ->withParsedBody([
-                              'id' => 1,
-                              'name' => 'Nowe Wykształcenie'
+                              'id'   => 1,
+                              'name' => 'Nowe Wykształcenie',
                           ]);
 
         $response = $this->handler->handle($request);
@@ -433,4 +435,4 @@ class EducationHandlerTest extends TestCase
         $data = json_decode($response->getBody()->getContents(), true);
         $this->assertEquals('ID is required', $data['error']);
     }
-} 
+}

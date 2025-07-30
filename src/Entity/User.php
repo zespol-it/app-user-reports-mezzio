@@ -90,4 +90,4 @@ class User
         $this->education = $education;
         return $this;
     }
-} 
+}

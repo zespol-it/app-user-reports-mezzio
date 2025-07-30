@@ -15,12 +15,13 @@ class EducationHandler implements RequestHandlerInterface
 {
     public function __construct(
         private EntityManager $entityManager
-    ) {}
+    ) {
+    }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $method = $request->getMethod();
-        
+
         return match ($method) {
             'GET' => $this->handleGet($request),
             'POST' => $this->handlePost($request),
@@ -32,9 +33,9 @@ class EducationHandler implements RequestHandlerInterface
 
     private function handleGet(ServerRequestInterface $request): ResponseInterface
     {
-        $attributes = $request->getAttribute('id');
+        $attributes  = $request->getAttribute('id');
         $queryParams = $request->getQueryParams();
-        $id = $attributes ?? ($queryParams['id'] ?? null);
+        $id          = $attributes ?? ($queryParams['id'] ?? null);
 
         if ($id) {
             return $this->getEducation((int) $id);
@@ -46,8 +47,8 @@ class EducationHandler implements RequestHandlerInterface
     private function handlePost(ServerRequestInterface $request): ResponseInterface
     {
         $data = $request->getParsedBody();
-        
-        if (!$data || !isset($data['name'])) {
+
+        if (! $data || ! isset($data['name'])) {
             return new JsonResponse(['error' => 'Name is required'], 400);
         }
 
@@ -58,23 +59,23 @@ class EducationHandler implements RequestHandlerInterface
         $this->entityManager->flush();
 
         return new JsonResponse([
-            'id' => $education->getId(),
+            'id'   => $education->getId(),
             'name' => $education->getName(),
         ], 201);
     }
 
     private function handlePut(ServerRequestInterface $request): ResponseInterface
     {
-        $data = $request->getParsedBody();
+        $data       = $request->getParsedBody();
         $attributes = $request->getAttribute('id');
-        $id = $attributes ?? ($data['id'] ?? null);
+        $id         = $attributes ?? ($data['id'] ?? null);
 
-        if (!$id) {
+        if (! $id) {
             return new JsonResponse(['error' => 'ID is required'], 400);
         }
 
         $education = $this->entityManager->getRepository(Education::class)->find($id);
-        if (!$education) {
+        if (! $education) {
             return new JsonResponse(['error' => 'Education not found'], 404);
         }
 
@@ -85,23 +86,23 @@ class EducationHandler implements RequestHandlerInterface
         $this->entityManager->flush();
 
         return new JsonResponse([
-            'id' => $education->getId(),
+            'id'   => $education->getId(),
             'name' => $education->getName(),
         ]);
     }
 
     private function handleDelete(ServerRequestInterface $request): ResponseInterface
     {
-        $attributes = $request->getAttribute('id');
+        $attributes  = $request->getAttribute('id');
         $queryParams = $request->getQueryParams();
-        $id = $attributes ?? ($queryParams['id'] ?? null);
+        $id          = $attributes ?? ($queryParams['id'] ?? null);
 
-        if (!$id) {
+        if (! $id) {
             return new JsonResponse(['error' => 'ID is required'], 400);
         }
 
         $education = $this->entityManager->getRepository(Education::class)->find($id);
-        if (!$education) {
+        if (! $education) {
             return new JsonResponse(['error' => 'Education not found'], 404);
         }
 
@@ -114,13 +115,13 @@ class EducationHandler implements RequestHandlerInterface
     private function getEducation(int $id): ResponseInterface
     {
         $education = $this->entityManager->getRepository(Education::class)->find($id);
-        
-        if (!$education) {
+
+        if (! $education) {
             return new JsonResponse(['error' => 'Education not found'], 404);
         }
 
         return new JsonResponse([
-            'id' => $education->getId(),
+            'id'   => $education->getId(),
             'name' => $education->getName(),
         ]);
     }
@@ -128,15 +129,15 @@ class EducationHandler implements RequestHandlerInterface
     private function getEducations(): ResponseInterface
     {
         $educations = $this->entityManager->getRepository(Education::class)->findAll();
-        
+
         $result = [];
         foreach ($educations as $education) {
             $result[] = [
-                'id' => $education->getId(),
+                'id'   => $education->getId(),
                 'name' => $education->getName(),
             ];
         }
 
         return new JsonResponse($result);
     }
-} 
+}

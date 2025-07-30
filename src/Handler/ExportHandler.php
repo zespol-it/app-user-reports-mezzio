@@ -5,30 +5,39 @@ declare(strict_types=1);
 namespace App\Handler;
 
 use App\Entity\User;
-use App\Entity\Education;
 use Doctrine\ORM\EntityManager;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Laminas\Diactoros\Response;
 use Laminas\Diactoros\Stream;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Dompdf\Dompdf;
-use Dompdf\Options;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
+use function date;
+use function filesize;
+use function fopen;
+use function htmlspecialchars;
+use function in_array;
+use function range;
+use function sys_get_temp_dir;
+use function tempnam;
 
 class ExportHandler implements RequestHandlerInterface
 {
     public function __construct(
         private EntityManager $entityManager
-    ) {}
+    ) {
+    }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $queryParams = $request->getQueryParams();
-        $format = $queryParams['format'] ?? null;
+        $format      = $queryParams['format'] ?? null;
 
-        if (!$format) {
+        if (! $format) {
             return new Response\JsonResponse(['error' => 'Format parameter is required'], 400);
         }
 
@@ -44,7 +53,7 @@ class ExportHandler implements RequestHandlerInterface
         $users = $this->getUsersData($queryParams);
 
         $spreadsheet = new Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
+        $sheet       = $spreadsheet->getActiveSheet();
 
         // Nagłówki
         $sheet->setCellValue('A1', 'ID');
@@ -70,9 +79,9 @@ class ExportHandler implements RequestHandlerInterface
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        $writer = new Xlsx($spreadsheet);
+        $writer   = new Xlsx($spreadsheet);
         $filename = 'users_report_' . date('Y-m-d_H-i-s') . '.xlsx';
-        
+
         $tempFile = tempnam(sys_get_temp_dir(), 'xls_');
         $writer->save($tempFile);
 
@@ -102,7 +111,7 @@ class ExportHandler implements RequestHandlerInterface
         $dompdf->render();
 
         $filename = 'users_report_' . date('Y-m-d_H-i-s') . '.pdf';
-        
+
         $response = new Response();
         $response = $response->withHeader('Content-Type', 'application/pdf');
         $response = $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
@@ -148,9 +157,9 @@ class ExportHandler implements RequestHandlerInterface
         }
 
         // Sortowanie
-        $sortBy = $queryParams['sort_by'] ?? 'id';
+        $sortBy    = $queryParams['sort_by'] ?? 'id';
         $sortOrder = $queryParams['sort_order'] ?? 'ASC';
-        
+
         $allowedSortFields = ['id', 'name', 'phoneNumber', 'address', 'age'];
         if (in_array($sortBy, $allowedSortFields)) {
             $qb->orderBy('u.' . $sortBy, $sortOrder);
@@ -161,11 +170,11 @@ class ExportHandler implements RequestHandlerInterface
         $result = [];
         foreach ($users as $user) {
             $result[] = [
-                'id' => $user->getId(),
-                'name' => $user->getName(),
-                'phone_number' => $user->getPhoneNumber(),
-                'address' => $user->getAddress(),
-                'age' => $user->getAge(),
+                'id'             => $user->getId(),
+                'name'           => $user->getName(),
+                'phone_number'   => $user->getPhoneNumber(),
+                'address'        => $user->getAddress(),
+                'age'            => $user->getAge(),
                 'education_name' => $user->getEducation() ? $user->getEducation()->getName() : '',
             ];
         }
@@ -223,4 +232,4 @@ class ExportHandler implements RequestHandlerInterface
 
         return $html;
     }
-} 
+}

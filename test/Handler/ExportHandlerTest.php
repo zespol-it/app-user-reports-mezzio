@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace AppTest\Handler;
 
-use App\Entity\User;
 use App\Entity\Education;
+use App\Entity\User;
 use App\Handler\ExportHandler;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
-use Laminas\Diactoros\Response\JsonResponse;
+use Doctrine\ORM\QueryBuilder;
 use Laminas\Diactoros\ServerRequest;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+
+use function json_decode;
 
 class ExportHandlerTest extends TestCase
 {
@@ -25,9 +26,9 @@ class ExportHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManager::class);
-        $this->queryBuilder = $this->createMock(QueryBuilder::class);
-        $this->query = $this->createMock(Query::class);
-        
+        $this->queryBuilder  = $this->createMock(QueryBuilder::class);
+        $this->query         = $this->createMock(Query::class);
+
         $this->handler = new ExportHandler($this->entityManager);
     }
 
@@ -191,8 +192,8 @@ class ExportHandlerTest extends TestCase
         $request = $request->withMethod('GET')
                           ->withQueryParams([
                               'format' => 'xls',
-                              'name' => 'Jan',
-                              'age' => 30
+                              'name'   => 'Jan',
+                              'age'    => 30,
                           ]);
 
         $response = $this->handler->handle($request);
@@ -246,9 +247,9 @@ class ExportHandlerTest extends TestCase
         $request = new ServerRequest();
         $request = $request->withMethod('GET')
                           ->withQueryParams([
-                              'format' => 'xls',
-                              'sort_by' => 'name',
-                              'sort_order' => 'ASC'
+                              'format'     => 'xls',
+                              'sort_by'    => 'name',
+                              'sort_order' => 'ASC',
                           ]);
 
         $response = $this->handler->handle($request);
@@ -282,4 +283,4 @@ class ExportHandlerTest extends TestCase
         $data = json_decode($response->getBody()->getContents(), true);
         $this->assertEquals('Format parameter is required', $data['error']);
     }
-} 
+}

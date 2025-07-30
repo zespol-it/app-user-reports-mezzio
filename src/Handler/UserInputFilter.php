@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
-use Laminas\InputFilter\InputFilter;
-use Laminas\InputFilter\Input;
-use Laminas\Validator;
 use Laminas\Filter;
+use Laminas\InputFilter\Input;
+use Laminas\InputFilter\InputFilter;
+use Laminas\Validator;
 
 class UserInputFilter extends InputFilter
 {
@@ -57,4 +57,4 @@ class UserInputFilter extends InputFilter
         $id->getValidatorChain()->attach(new Validator\Digits());
         $this->add($id);
     }
-} 
+}

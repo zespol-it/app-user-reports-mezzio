@@ -325,6 +325,175 @@ curl -X POST http://localhost:8080/api/users \
 
 ---
 
+## 🔒 Testowanie bezpieczeństwa
+
+### 1. Testy automatyczne
+```bash
+# Instalacja narzędzi bezpieczeństwa
+composer require --dev roave/security-advisories
+composer require --dev phpunit/phpunit-security-testing
+
+# Uruchomienie testów bezpieczeństwa
+composer security-test
+
+# Sprawdzenie zależności pod kątem luk
+composer audit
+
+# Analiza statyczna pod kątem bezpieczeństwa
+composer security-scan
+```
+
+### 2. Testy SQL Injection
+```bash
+# Test parametrów GET
+curl "http://localhost:8080/api/users?name='; DROP TABLE users; --"
+curl "http://localhost:8080/api/users?name=' OR 1=1 --"
+
+# Test parametrów POST
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"\"; DROP TABLE users; --"}'
+
+# Test parametrów PUT
+curl -X PUT http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"id":1,"name":"\"; UPDATE users SET name=\"hacked\" --"}'
+```
+
+### 3. Testy XSS (Cross-Site Scripting)
+```bash
+# Test XSS w polach tekstowych
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"<script>alert(\"XSS\")</script>"}'
+
+# Test XSS w adresie
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"address":"<img src=x onerror=alert(\"XSS\")>"}'
+
+# Test XSS w numerze telefonu
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"phone_number":"javascript:alert(\"XSS\")"}'
+```
+
+### 4. Testy CSRF (Cross-Site Request Forgery)
+```bash
+# Test bez tokenu CSRF
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"test"}'
+
+# Test z nieprawidłowym tokenem
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: invalid-token" \
+  -d '{"name":"test"}'
+```
+
+### 5. Testy autoryzacji
+```bash
+# Test dostępu bez autoryzacji
+curl http://localhost:8080/api/users
+
+# Test dostępu z nieprawidłowym tokenem
+curl -H "Authorization: Bearer invalid-token" http://localhost:8080/api/users
+
+# Test dostępu do zasobów innych użytkowników
+curl -H "Authorization: Bearer user1-token" http://localhost:8080/api/users/2
+```
+
+### 6. Testy walidacji danych
+```bash
+# Test nieprawidłowych typów danych
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"age":"not-a-number"}'
+
+# Test zbyt długich danych
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name":"'$(printf 'A%.0s' {1..1000})'"}'
+
+# Test pustych danych
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+### 7. Testy nagłówków bezpieczeństwa
+```bash
+# Sprawdzenie nagłówków HTTP
+curl -I http://localhost:8080/api/users
+
+# Oczekiwane nagłówki:
+# X-Content-Type-Options: nosniff
+# X-Frame-Options: DENY
+# X-XSS-Protection: 1; mode=block
+# Content-Security-Policy: default-src 'self'
+# Strict-Transport-Security: max-age=31536000; includeSubDomains
+```
+
+### 8. Testy rate limiting
+```bash
+# Test limitu żądań
+for i in {1..100}; do
+  curl http://localhost:8080/api/users
+done
+
+# Sprawdzenie czy zwracany jest kod 429 (Too Many Requests)
+```
+
+### 9. Testy logowania
+```bash
+# Sprawdzenie czy błędy są logowane
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"invalid":"data"}'
+
+# Sprawdzenie logów
+tail -f logs/security.log
+```
+
+### 10. Testy szyfrowania
+```bash
+# Sprawdzenie czy dane są szyfrowane w bazie
+sqlite3 data/database.sqlite "SELECT * FROM user WHERE name LIKE '%test%';"
+
+# Sprawdzenie czy hasła są hashowane
+sqlite3 data/database.sqlite "SELECT password FROM user WHERE id = 1;"
+```
+
+### 11. Narzędzia do testowania bezpieczeństwa
+```bash
+# OWASP ZAP (Zed Attack Proxy)
+zap-cli quick-scan --self-contained http://localhost:8080
+
+# Nikto (skaner bezpieczeństwa)
+nikto -h http://localhost:8080
+
+# SQLMap (testy SQL Injection)
+sqlmap -u "http://localhost:8080/api/users?name=test" --dbs
+
+# Burp Suite (proxy do testowania)
+# Uruchom Burp Suite i skonfiguruj proxy
+```
+
+### 12. Checklist bezpieczeństwa
+- [ ] Wszystkie dane wejściowe są walidowane
+- [ ] Zapytania SQL używają prepared statements
+- [ ] Dane wyjściowe są escapowane
+- [ ] Implementowany jest rate limiting
+- [ ] Używane są nagłówki bezpieczeństwa
+- [ ] Błędy nie ujawniają wrażliwych informacji
+- [ ] Sesje są bezpiecznie zarządzane
+- [ ] Hasła są hashowane
+- [ ] Implementowana jest autoryzacja
+- [ ] Logi bezpieczeństwa są prowadzone
+
+---
+
 ## 📊 Metryki jakości
 
 ### Kod
